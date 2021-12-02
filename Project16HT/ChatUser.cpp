@@ -92,16 +92,15 @@ bool ChatUser::isOnline() const
 	return _online;
 }
 
-void ChatUser::setOnline()
+void ChatUser::setOnline() const
 {
 	_online = true;
 }
 
-void ChatUser::setOffline()
+void ChatUser::setOffline() const
 {
 	_online = false;
 }
-
 
 void intToByte(unsigned int n, unsigned char* result)
 {

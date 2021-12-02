@@ -2,6 +2,10 @@
 #include <iostream>
 #include "sha1.h"
 
+/*
+* Класс ChatUser для хранения информации о пользователе.
+* 
+*/
 class ChatUser
 {
 public:
@@ -18,14 +22,14 @@ public:
 	bool compareHashes(Block other) const;
 	bool compareHashes(ChatUser other) const;
 	bool isOnline() const;
-	void setOnline();
-	void setOffline();
+	void setOnline() const;
+	void setOffline() const;
 
 private:
 	std::string _login;
 	std::string _name;
 	Block _passSha1Hash;
-	bool _online;
+	mutable bool _online;
 };
 
 void intToByte(unsigned int n, unsigned char* result);
