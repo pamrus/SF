@@ -20,7 +20,7 @@ public:
 	Block getHashBinary() const;
 	void setHash(Block newHash);
 	bool compareHashes(Block other) const;
-	bool compareHashes(ChatUser other) const;
+	bool compareHashes(const ChatUser& other) const;
 	bool isOnline() const;
 	void setOnline() const;
 	void setOffline() const;

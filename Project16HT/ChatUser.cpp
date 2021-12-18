@@ -8,7 +8,7 @@ ChatUser::ChatUser(const std::string& login, const std::string& name, const std:
 {
 	_login = login;
 	_name = name;
-	_passSha1Hash = sha1(password.c_str(), password.length());
+	_passSha1Hash = sha1(password.c_str(), (uint)password.length());
 	_online = false;
 }
 
@@ -82,7 +82,7 @@ bool ChatUser::compareHashes(Block other) const
     return true;
 }
 
-bool ChatUser::compareHashes(ChatUser other) const
+bool ChatUser::compareHashes(const ChatUser& other) const
 {
     return compareHashes(other._passSha1Hash);
 }

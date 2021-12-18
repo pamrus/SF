@@ -25,7 +25,7 @@ void ChatMessagesList::addMessage(const ChatMessage& newMessage)
 	_messagesList.insert(newMessage);
 }
 
-ChatMessage ChatMessagesList::findMessage(std::string receiver)
+ChatMessage ChatMessagesList::findMessage(const std::string& receiver)
 {
 	ChatMessage tmpMsg("", "", receiver);
 	messagesListType::const_iterator iterFound = _messagesList.find(tmpMsg);
@@ -51,10 +51,10 @@ bool ChatMessagesList::saveToBinaryFile() const
 	{
 		std::string tmpStr;			// Буфер для получения текстовых полей структуры ChatMessage
 		char* tmpCharArr;			// Буфер для сохранения текстовых полей структуры ChatMessage
-		unsigned int tmpSize;		// Счётчик записываемых значений
+		size_t tmpSize;		// Счётчик записываемых значений
 
 		tmpSize = _messagesList.size();
-		messagesFile.write(reinterpret_cast<char*>(&tmpSize), sizeof(tmpSize)); // Сохраняем число сообщений
+		messagesFile.write(reinterpret_cast<char*>(&tmpSize), sizeof(unsigned int)); // Сохраняем число сообщений
 
 		for (auto msgNum : _messagesList)
 		{
@@ -62,7 +62,7 @@ bool ChatMessagesList::saveToBinaryFile() const
 			tmpSize = tmpStr.length();
 			tmpCharArr = new char[tmpSize + 1];
 			strcpy_s(tmpCharArr, tmpSize + 1, tmpStr.c_str());
-			messagesFile.write(reinterpret_cast<char*>(&tmpSize), sizeof(tmpSize));
+			messagesFile.write(reinterpret_cast<char*>(&tmpSize), sizeof(unsigned int));
 			messagesFile.write(reinterpret_cast<char*>(tmpCharArr), tmpSize);
 			delete[] tmpCharArr;
 
@@ -70,7 +70,7 @@ bool ChatMessagesList::saveToBinaryFile() const
 			tmpSize = tmpStr.length();
 			tmpCharArr = new char[tmpSize + 1];
 			strcpy_s(tmpCharArr, tmpSize + 1, tmpStr.c_str());
-			messagesFile.write(reinterpret_cast<char*>(&tmpSize), sizeof(tmpSize));
+			messagesFile.write(reinterpret_cast<char*>(&tmpSize), sizeof(unsigned int));
 			messagesFile.write(reinterpret_cast<char*>(tmpCharArr), tmpSize);
 			delete[] tmpCharArr;
 
@@ -78,7 +78,7 @@ bool ChatMessagesList::saveToBinaryFile() const
 			tmpSize = tmpStr.length();
 			tmpCharArr = new char[tmpSize + 1];
 			strcpy_s(tmpCharArr, tmpSize + 1, tmpStr.c_str());
-			messagesFile.write(reinterpret_cast<char*>(&tmpSize), sizeof(tmpSize));
+			messagesFile.write(reinterpret_cast<char*>(&tmpSize), sizeof(unsigned int));
 			messagesFile.write(reinterpret_cast<char*>(tmpCharArr), tmpSize);
 			delete[] tmpCharArr;
 		}

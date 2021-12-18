@@ -38,7 +38,7 @@ public:
 	size_t getMessagesCount() const;
 	bool isEmpty() const;
 	void addMessage(const ChatMessage& newMessage);
-	ChatMessage findMessage(std::string receiver);
+	ChatMessage findMessage(const std::string& receiver);
 	bool saveToBinaryFile() const;							// Сохранение базы в бинарный файл
 	bool loadFromBinaryFile();								// Чтение базы из текстового файла
 

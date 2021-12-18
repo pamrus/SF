@@ -1,63 +1,69 @@
 ﻿#include "ChatEngine.h"
 
-ChatEngine::ChatEngine() { }
+ChatEngine::ChatEngine() 
+{ 
+	for (unsigned int i = 0; i < TABLE_SIZE; ++i)
+		_stateMachine.addState(defaultTable[i]);
+}
 
 ChatEngine::~ChatEngine() { }
 
 void ChatEngine::mainLoop()
 {
 	char key;
-	while (_stateMachine.getCurrentState()!= 6) // Состояние 6 = выход из чата
+	std::cout << "Приветствуем! Число зарегистрированных пользователей: " << _usersList.getNumberOfUsers() << "." << std::endl;
+	while (_stateMachine.getCurrentState()!= stateQuit)
 	{
 		switch (_stateMachine.getCurrentState())
 		{
-		case 0:	printHelp();
+		case statePrintHelpNotLoggedIn:	printHelp();
 			break;
-		case 1: registerUser();
+		case stateRegistration: registerUser();
 			break;
-		case 2: logInUser();
+		case stateLogIn: logInUser();
 			break;
-		case 3: readMessages();
+		case stateReadMessages: readMessages();
 			break;
-		case 4: sendMessage();
+		case stateSendMessage: sendMessage();
 			break;
-		case 5: logOutUser();
+		case stateLogOut: logOutUser();
 			break;
-		case 7: userLoggedIn();
+		case stateUserSuccessfullLogIn:		// состояния-заглушки для механики таблицы переходов
 			break;
-		case 8: wrongLogIn();
+		case stateUserUnsuccessfullLogIn:	// -//-
 			break;
-		case 9: listUsers();
+		case statePrintUsersList: listUsers();
+			break;
+		case statePrintHelpLoggedIn: printHelpUserOnline();
 			break;
 		default: std::cout << "[FAILED] state not supported!" << endl;
 			break;
 		}
+		std::cout << "Доступные команды: (" << _stateMachine.availableKeys() << ")." << std::endl;
 		std::cin >> key;
-		std::cin.ignore(1000, '\n'); // Пропуск всех символов, кроме первого
+		std::cin.ignore(1000, '\n');
 		_stateMachine.changeState(key);
-	} 
+	}
+	std::cout << "Ждём Вас снова!" << std::endl;
 }
 
-void ChatEngine::printHelp()
+void ChatEngine::printHelp() // H
 {
-	std::cout << "Приветствуем! В чате зарегистрировано " << _usersList.getNumberOfUsers() << " пользователей!" << std::endl;
-	std::cout << "R - Регистрация нового пользователя" << std::endl <<		// 1
-		"I - Ввод данных для входа пользователя в систему" << std::endl <<	// 2
-		"M - Вывод поступивших сообщений" << std::endl <<					// 3
-		"L - Вывод списка зарегистрированных пользователей" << std::endl <<	// 9
-		"W - Написание и отправка сообщения" << std::endl <<				// 4
-		"O - Выход пользователя из чата" << std::endl <<					// 5
-		"E - Завершение работы чата" << std::endl;							// 6
-	std::cout << "Доступные команды: (R,I,E)." << std::endl;
+	std::cout << "R - Регистрация нового пользователя" << std::endl <<
+		"I - Ввод данных для входа пользователя в систему" << std::endl <<
+		"E - Завершение работы чата" << std::endl <<
+		"H - Вывод информационного сообщения" << std::endl;
 }
 
-void ChatEngine::registerUser() // R,1
+void ChatEngine::registerUser() // R
 {
 	std::string newLogin, newName, newPassword;
 	std::cout << "==Регистрация нового пользователя==" << std::endl << "Введите логин пользователя:";
 	std::cin >> newLogin;
 	std::cout << "Введите имя пользователя:";
-	std::cin >> newName;
+	std::cin.clear();
+	std::cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Накапливаем "все" символы до return
+	std::getline(std::cin, newName);
 	std::cout << "Введите пароль пользователя:";
 	std::cin >> newPassword;
 	ChatUser newUser(newLogin, newName, newPassword);
@@ -65,10 +71,9 @@ void ChatEngine::registerUser() // R,1
 		std::cout << "Регистрация прошла успешно!" << std::endl;
 	else
 		std::cout << "Ошибка регистрации! Ознакомьтесь с правилами использования чата." << std::endl;
-	std::cout << "Доступные команды: (R,I,E)." << std::endl;
 }
 
-void ChatEngine::logInUser() // I,2
+void ChatEngine::logInUser() // I
 {
 	std::string newLogin, newName, newPassword;
 	std::cout << "==Вход пользователя в чат==" << std::endl << "Введите логин пользователя:";
@@ -78,22 +83,18 @@ void ChatEngine::logInUser() // I,2
 	ChatUser newUser(newLogin, "", newPassword);
 	if (_usersList.login(newUser))
 	{
-		std::cout << "Вы вошли в систему!" << std::endl;
 		_currentUser = newLogin;
-		_stateMachine.changeStateForced(7);
-
-		std::cout << "Доступные команды: (M,L,W,O,E)." << std::endl;
+		std::cout << "Здравствуйте, \'" << _usersList.getNameByLogin(_currentUser) << "\'!" << std::endl;
+		_stateMachine.changeStateForced(stateUserSuccessfullLogIn);
 	}
 	else
 	{
 		std::cout << "Ошибка входа! Неправильный логин или пароль." << std::endl;
-		_stateMachine.changeStateForced(8);
-
-		std::cout << "Доступные команды: (R,I,E)." << std::endl;
+		_stateMachine.changeStateForced(stateUserUnsuccessfullLogIn);
 	}
 }
 
-void ChatEngine::readMessages() // M,3
+void ChatEngine::readMessages() // M
 {
 	std::cout << "==Чтение новых сообщений==" << std::endl;
 	std::string messageText = "";
@@ -116,50 +117,44 @@ void ChatEngine::readMessages() // M,3
 			std::cout << "Сообщения для пользователя \'" << _usersList.getNameByLogin(_currentUser) << "\':" << std::endl;
 			msgExists = true;
 		}
-		std::cout << "[" << messageSender << "]" << messageText << std::endl;
+		std::cout << "[" << messageSender << "]: " << messageText << std::endl;
 	}
-
-	std::cout << "Доступные команды: (M,L,W,O,E)." << std::endl;
 }
 
-void ChatEngine::sendMessage() // W,4
+void ChatEngine::sendMessage() // W
 {
 	std::cout << "==Отправка сообщения==" << std::endl;
-	std::string messageText = "";
-	std::string messageReceiver = "";
+	std::string messageText;
+	std::string messageReceiver;
 	std::cout << "Введите логин получателя:";
 	std::cin >> messageReceiver;
 	std::cout << "Введите текст сообщения:";
-	std::cin >> messageText;
+	std::cin.clear();
+	std::cin.ignore(numeric_limits<streamsize>::max(), '\n');
+	std::getline(std::cin, messageText);
 	ChatMessage currMessage(_currentUser, messageText, messageReceiver);
 	_messagesList.addMessage(currMessage);
-
-	std::cout << "Доступные команды: (M,L,W,O,E)." << std::endl;
 }
 
-void ChatEngine::logOutUser() // O,5
+void ChatEngine::logOutUser() // O
 {
+	ChatUser newUser(_currentUser, "", "");
+	_usersList.logout(newUser);
 	std::cout << "==Вы вышли из системы==" << std::endl;
-	_currentUser = "";
-
-	std::cout << "Доступные команды: (R,I,E)." << std::endl;
+	_currentUser.clear();
 }
 
-void ChatEngine::userLoggedIn() // 7
+void ChatEngine::listUsers() // L
 {
-	std::cout << "Здравствуйте, \'" << _usersList.getNameByLogin(_currentUser) << "\'!" << std::endl;
-
-	std::cout << "Доступные команды: (M,L,W,O,E)." << std::endl;
-}
-
-void ChatEngine::wrongLogIn() // 8
-{
-	//std::cout << "Доступные команды: (R,I,E)." << std::endl;
-}
-
-void ChatEngine::listUsers()
-{
+	std::cout << "Число зарегистрированных пользователей: " << _usersList.getNumberOfUsers() << "." << std::endl;
 	std::cout << _usersList;
+}
 
-	std::cout << "Доступные команды: (M,L,W,O,E)." << std::endl;
+void ChatEngine::printHelpUserOnline() // H
+{
+	std::cout << "M - Вывод поступивших сообщений" << std::endl <<
+		"L - Вывод списка зарегистрированных пользователей" << std::endl <<
+		"W - Написание и отправка сообщения" << std::endl <<
+		"O - Выход пользователя из чата" << std::endl <<
+		"E - Завершение работы чата" << std::endl;
 }

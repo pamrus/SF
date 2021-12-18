@@ -4,78 +4,28 @@
 #include <functional>
 #include <cctype>
 
-//NOTE: Основной класс определён в конце файла
+enum tableStates // Определяем перечисление состояний, в которых может находиться чат
+{
+    statePrintHelpNotLoggedIn,      //  Вывод информационного сообщения
+    stateRegistration,              //  Регистрация нового пользователя
+    stateLogIn,                     //  Ввод данных для входа пользователя в систему
+    stateReadMessages,              //  Вывод поступивших сообщений
+    stateSendMessage,               //  Написание и отправка сообщения
+    stateLogOut,                    //  Выход пользователя из чата
+    stateQuit,                      //  Завершение работы чата
+    stateUserSuccessfullLogIn,      //  Пользователь успешно зашёл в чат
+    stateUserUnsuccessfullLogIn,    //  Неправильный логин/пароль при входе в чат
+    statePrintUsersList,            //  Вывод списка пользователей
+    statePrintHelpLoggedIn          //  Вывод информационного сообщения
+};
 
 struct  TableElement // Определяем понятие перехода из одного состояния в другое по ключу
 {
-    unsigned int  _current;
-    unsigned char _key;
-    unsigned int  _next;
+    tableStates  _current;
+    unsigned char _key; // Код вводимого с клавиатуры символа, обеспечивающего переход из начального состояния в конечное
+    tableStates  _next;
+    //void (* const _functionPointer)();
 };
-
-/*
-* Заданная вручную таблица переходов между состояниями чата:
-* 0) Вывод информационного сообщения
-* 1) Регистрация нового пользователя
-* 2) Ввод данных для входа пользователя в систему
-* 3) Вывод поступивших сообщений
-* 4) Написание и отправка сообщения
-* 5) Выход пользователя из чата
-* 6) Завершение работы чата
-* 7) Пользователь успешно зашёл в чат
-* 8) Неправильный логин/пароль при входе в чат
-* 9) Вывод списка пользователей
-*/
-static const TableElement defaultTable[] =
-{
-    //  Current   Transition     Next
-    //  State ID    Letter     State ID
-    // Состоялся вывод информационного сообщения
-    {    0,          'R',        1}, // Регистрация нового пользователя
-    {    0,          'I',        2}, // Вход в систему зарегистрированного пользователя
-    {    0,          'E',        6}, // Завершение программы
-    // Состоялась (успешно или не успешно) регистрация пользователя
-    {    1,          'R',        1}, // Регистрация нового пользователя
-    {    1,          'I',        2}, // Вход в систему зарегистрированного пользователя
-    {    1,          'E',        6}, // Завершение программы
-    // Состоялся (успешно или не успешно) вход в систему
-    {    2,          '\0',        7}, // Пользователь вошёл
-    {    2,          '\0',        8}, // Пользователь не вошёл
-    // Состоялся вывод поступивших сообщений
-    {    3,          'M',        3}, // Чтение поступивших сообщений
-    {    3,          'W',        4}, // Написание и отправка сообщения
-    {    3,          'O',        5}, // Выход из системы
-    {    3,          'E',        6}, // Завершение программы
-    {    3,          'L',        9}, // Вывод списка пользователей
-    // Состоялось написание и отправка нового сообщения
-    {    4,          'M',        3}, // Чтение поступивших сообщений
-    {    4,          'W',        4}, // Написание и отправка сообщения
-    {    4,          'O',        5}, // Выход из системы
-    {    4,          'E',        6}, // Завершение программы
-    {    4,          'L',        9}, // Вывод списка пользователей
-    // Состоялся выход пользователя из чата
-    {    5,          'R',        1}, // Регистрация нового пользователя
-    {    5,          'I',        2}, // Вход в систему зарегистрированного пользователя
-    {    5,          'E',        6}, // Завершение программы
-    // Состоялся успешный вход пользователя в систему
-    {    7,          'M',        3}, // Чтение поступивших сообщений
-    {    7,          'W',        4}, // Написание и отправка сообщения
-    {    7,          'O',        5}, // Выход из системы
-    {    7,          'E',        6}, // Завершение программы
-    {    7,          'L',        9}, // Вывод списка пользователей
-    // Состоялся неуспешный вход пользователя в систему
-    {    8,          'R',        1}, // Регистрация нового пользователя
-    {    8,          'I',        2}, // Вход в систему зарегистрированного пользователя
-    {    8,          'E',        6}, // Завершение программы
-    // Состоялся вывод списка пользователей
-    {    9,          'M',        3}, // Чтение поступивших сообщений
-    {    9,          'W',        4}, // Написание и отправка сообщения
-    {    9,          'O',        5}, // Выход из системы
-    {    9,          'E',        6}, // Завершение программы
-    {    9,          'L',        9}, // Вывод списка пользователей
-
-};  //TODO: перевести номера состояний на constexpr-псевдонимы?
-static const unsigned int  TABLE_SIZE = sizeof(defaultTable) / sizeof(defaultTable[0]);
 
 using stateTableType = std::vector<TableElement>; // Определяем тип контейнера таблицы состояний.
 
@@ -90,16 +40,15 @@ public:
     ChatStateTable();
     ~ChatStateTable();
 
-    unsigned int getCurrentState();
-    stateTableType::iterator chatStateTableBegin();
-    stateTableType::iterator chatStateTableEnd();
-    void addState(TableElement newState);
-    void addState(unsigned int stateFrom, unsigned char stateKey, unsigned int stateTo);
+    tableStates getCurrentState() const;
+    void addState(const TableElement& newState);
+    void addState(const tableStates& stateFrom, const unsigned char& stateKey, const tableStates& stateTo);
     unsigned int changeState(const unsigned char& key);
-    void changeStateForced(unsigned int newState);
+    void changeStateForced(const tableStates& newState);
+    std::string availableKeys() const;
 
 private:
     stateTableType _stateTable;
-    unsigned int _currentState;
+    tableStates _currentState;
 
 };

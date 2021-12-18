@@ -22,7 +22,7 @@ bool ChatUsersList::addUser(const ChatUser& newUser)
 }
 
 
-bool ChatUsersList::login(const ChatUser& newUser)
+bool ChatUsersList::login(const ChatUser& newUser) const
 {
 	usersListType::const_iterator userInList = findUser(newUser.getLogin());
 	if (userInList == std::end(_usersList)) // Не зарегистрировано пользователя с таким логином
@@ -33,6 +33,13 @@ bool ChatUsersList::login(const ChatUser& newUser)
 		return true;
 	}
 	return false;
+}
+
+void ChatUsersList::logout(const ChatUser& newUser) const
+{
+	usersListType::const_iterator userInList = findUser(newUser.getLogin());
+	if (userInList != std::end(_usersList)) // Не зарегистрировано пользователя с таким логином
+		userInList->setOffline();
 }
 
 /*=================================================================================
@@ -51,10 +58,10 @@ bool ChatUsersList::saveToBinaryFile() const
 		char* tmpCharArr;			// Буфер для сохранения текстовых полей структуры ChatUser
 		Block tmpHash;				// Буфер для получения хеша структуры CharUser
 		unsigned int tmpHashInt;	// Буфер для сохранения хеша структуры CharUser
-		unsigned int tmpSize;		// Счётчик записываемых значений
+		size_t tmpSize;				// Счётчик записываемых значений
 
 		tmpSize = _usersList.size();
-		usersFile.write(reinterpret_cast<char*>(&tmpSize), sizeof(tmpSize)); // Сохраняем число пользователей
+		usersFile.write(reinterpret_cast<char*>(&tmpSize), sizeof(unsigned int)); // Сохраняем число пользователей
 
 		for (auto userNum : _usersList)
 		{
@@ -62,7 +69,7 @@ bool ChatUsersList::saveToBinaryFile() const
 			tmpSize = tmpStr.length();
 			tmpCharArr = new char[tmpSize + 1];
 			strcpy_s(tmpCharArr, tmpSize + 1, tmpStr.c_str());
-			usersFile.write(reinterpret_cast<char*>(&tmpSize), sizeof(tmpSize));
+			usersFile.write(reinterpret_cast<char*>(&tmpSize), sizeof(unsigned int));
 			usersFile.write(reinterpret_cast<char*>(tmpCharArr), tmpSize);
 			delete[] tmpCharArr;
 
@@ -70,7 +77,7 @@ bool ChatUsersList::saveToBinaryFile() const
 			tmpSize = tmpStr.length();
 			tmpCharArr = new char[tmpSize + 1];
 			strcpy_s(tmpCharArr, tmpSize + 1, tmpStr.c_str());
-			usersFile.write(reinterpret_cast<char*>(&tmpSize), sizeof(tmpSize));
+			usersFile.write(reinterpret_cast<char*>(&tmpSize), sizeof(unsigned int));
 			usersFile.write(reinterpret_cast<char*>(tmpCharArr), tmpSize);
 			delete[] tmpCharArr;
 
@@ -158,13 +165,13 @@ bool ChatUsersList::loadFromBinaryFile()
 		return false;
 }
 
-bool ChatUsersList::isUserRegistered(std::string login) const
+bool ChatUsersList::isUserRegistered(const std::string& login) const
 {
 	usersListType::const_iterator iterFound = findUser(login);
 	return iterFound != std::end(_usersList);
 }
 
-std::string ChatUsersList::getNameByLogin(std::string login) const
+std::string ChatUsersList::getNameByLogin(const std::string& login) const
 {
 	usersListType::const_iterator iterFound = findUser(login);
 	if (iterFound != std::end(_usersList))
@@ -173,7 +180,7 @@ std::string ChatUsersList::getNameByLogin(std::string login) const
 		return "";
 }
 
-size_t ChatUsersList::getNumberOfUsers()
+size_t ChatUsersList::getNumberOfUsers() const
 {
 	return _usersList.size();
 }
@@ -184,11 +191,14 @@ usersListType::const_iterator ChatUsersList::findUser(const std::string& login) 
 	return _usersList.find(ChatUser(login));
 }
 
-ostream& operator<<(ostream& output, const ChatUsersList userList)
+ostream& operator<<(ostream& output, const ChatUsersList& userList)
 {
 	for (auto userNum : userList._usersList)
 	{
-		output << "[" << userNum.getLogin() << "] " << userNum.getName() << std::endl;
+		if(userNum.isOnline())
+			output << "[" << userNum.getLogin() << "] " << userNum.getName() << " - " << "Online" << std::endl;
+		else
+			output << "[" << userNum.getLogin() << "] " << userNum.getName() << " - " << "Offline" << std::endl;
 	}
 	return output;
 }

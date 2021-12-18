@@ -2,34 +2,24 @@
 
 ChatStateTable::ChatStateTable()
 {
-    for (unsigned int i = 0; i < TABLE_SIZE; ++i)
-        addState(defaultTable[i]);
-    _currentState = 0;
+    //for (unsigned int i = 0; i < TABLE_SIZE; ++i)
+    //    addState(defaultTable[i]);
+    _currentState = statePrintHelpNotLoggedIn; // Состояние при запуске
 }
 
 ChatStateTable::~ChatStateTable() { }
 
-unsigned int ChatStateTable::getCurrentState()
+tableStates ChatStateTable::getCurrentState() const
 {
     return _currentState;
 }
 
-stateTableType::iterator ChatStateTable::chatStateTableBegin()
-{
-    return _stateTable.begin();
-}
-
-stateTableType::iterator ChatStateTable::chatStateTableEnd()
-{
-    return _stateTable.end();
-}
-
-void ChatStateTable::addState(TableElement newState)
+void ChatStateTable::addState(const TableElement& newState)
 {
     _stateTable.push_back(newState);
 }
 
-void ChatStateTable::addState(unsigned int stateFrom, unsigned char stateKey, unsigned int stateTo)
+void ChatStateTable::addState(const tableStates& stateFrom, const unsigned char& stateKey, const tableStates& stateTo)
 {
     TableElement newState = {stateFrom, stateKey, stateTo};
     addState(newState);
@@ -37,8 +27,8 @@ void ChatStateTable::addState(unsigned int stateFrom, unsigned char stateKey, un
 
 unsigned int ChatStateTable::changeState(const unsigned char& key)
 {
-    stateTableType::iterator p_entry = chatStateTableBegin();
-    stateTableType::iterator p_table_end = chatStateTableEnd();
+    stateTableType::iterator p_entry = _stateTable.begin();
+    stateTableType::iterator p_table_end = _stateTable.end();
     bool state_found = false;
 
     while ((!state_found) && (p_entry != p_table_end))
@@ -62,12 +52,34 @@ unsigned int ChatStateTable::changeState(const unsigned char& key)
     }
     if (!state_found)
     {
-        //std::cerr << "Transition letter not found, current state not changed.\n";
+        //std::cerr << "[FAILED] Transition letter not found, current state not changed.\n";
     }
     return _currentState;
 }
 
-void ChatStateTable::changeStateForced(unsigned int newState)
+void ChatStateTable::changeStateForced(const tableStates& newState)
 {
     _currentState = newState;
+}
+
+std::string ChatStateTable::availableKeys() const
+{
+    stateTableType::const_iterator p_entry = _stateTable.begin();
+    stateTableType::const_iterator p_table_end = _stateTable.end();
+    bool state_found = false;
+    std::string keysList;
+
+    while (p_entry != p_table_end)
+    {
+        if (p_entry->_current == _currentState)
+        {
+            if (!state_found)
+                state_found = true;
+            else
+                keysList += ", ";
+            keysList += p_entry->_key;
+        }
+        ++p_entry;
+    }
+    return keysList;
 }

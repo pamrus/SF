@@ -38,15 +38,16 @@ public:
 	~ChatUsersList();
 
 	bool addUser(const ChatUser& newUser);					// Проверка пользователя по множеству запрещённых и добавление в контейнер
-	bool login(const ChatUser& newUser);					// Проверка на правильность пароля по логину
+	bool login(const ChatUser& newUser) const;				// Проверка на правильность пароля по логину
+	void logout(const ChatUser& newUser) const;
 
 	bool saveToBinaryFile() const;							// Сохранение базы в бинарный файл
 	bool loadFromBinaryFile();								// Чтение базы из текстового файла
 
-	bool isUserRegistered(std::string login) const;
-	std::string getNameByLogin(std::string login) const;
-	size_t getNumberOfUsers();
-	friend ostream& operator<<(ostream& output, const ChatUsersList userList); // Потоковый вывод 
+	bool isUserRegistered(const std::string& login) const;
+	std::string getNameByLogin(const std::string& login) const;
+	size_t getNumberOfUsers() const;
+	friend ostream& operator<<(ostream& output, const ChatUsersList& userList); // Потоковый вывод 
 
 private:
 	usersListType _usersList;						// Хеш-таблица для хранения зарегистрированных пользователей
