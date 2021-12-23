@@ -7,8 +7,6 @@ ChatStateTable::ChatStateTable()
     _currentState = statePrintHelpNotLoggedIn; // Состояние при запуске
 }
 
-ChatStateTable::~ChatStateTable() { }
-
 tableStates ChatStateTable::getCurrentState() const
 {
     return _currentState;

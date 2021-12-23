@@ -4,21 +4,15 @@ ChatUser::ChatUser(const std::string& login, const std::string& name, Block hash
 {
 }
 
-ChatUser::ChatUser(const std::string& login, const std::string& name, const std::string& password)
+ChatUser::ChatUser(const std::string& login, const std::string& name, const std::string& password) : _login(login), _name(name), _online(false)
 {
-	_login = login;
-	_name = name;
 	_passSha1Hash = sha1(password.c_str(), (uint)password.length());
-	_online = false;
 }
 
 ChatUser::ChatUser(const std::string& login) : _login(login), _name(""), _passSha1Hash(nullptr), _online(false)
 {
 }
 
-ChatUser::~ChatUser()
-{
-}
 
 std::string ChatUser::getLogin() const
 {
@@ -51,7 +45,7 @@ void ChatUser::setHash(Block newHash)
 
 bool ChatUser::compareHashes(Block other) const
 {
-    if ((other == nullptr) || (_passSha1Hash == nullptr))
+    if ( !other || !_passSha1Hash )
         return false;
     for (unsigned int i = 0; i < SHA1HASHLENGTHUINTS; ++i)
         if (other[i] != _passSha1Hash[i])

@@ -17,7 +17,7 @@ bool ChatUsersList::addUser(const ChatUser& newUser)
 		return false; // - по правилам, либо такой логин уже используется
 
 	_usersList.insert(newUser); // Добавляем пользователя в список
-	_forbiddenLogins.insert(newUser.getLogin()); // Резервируем его логин
+	_forbiddenLogins.emplace(newUser.getLogin()); // Резервируем его логин
 	return true;
 }
 
@@ -60,25 +60,25 @@ bool ChatUsersList::saveToBinaryFile() const
 		size_t tmpSize;				// Счётчик записываемых значений
 
 		tmpSize = _usersList.size();
-		usersFile.write(reinterpret_cast<char*>(&tmpSize), sizeof(unsigned int)); // Сохраняем число пользователей
+		usersFile.write(reinterpret_cast<char*>(&tmpSize), sizeof tmpSize); // Сохраняем число пользователей
 
 		for (auto &userNum : _usersList)
 		{
 			tmpStr = userNum.getLogin(); // Сохраняем логин пользователя
 			tmpSize = tmpStr.length();
-			usersFile.write((char*)&tmpSize, sizeof(unsigned int));
+			usersFile.write((char*)&tmpSize, sizeof tmpSize);
 			usersFile.write(tmpStr.data(), tmpSize);
 
 			tmpStr = userNum.getName(); // Сохраняем имя пользователя
 			tmpSize = tmpStr.length();
-			usersFile.write((char*)&tmpSize, sizeof(unsigned int));
+			usersFile.write((char*)&tmpSize, sizeof tmpSize);
 			usersFile.write(tmpStr.data(), tmpSize);
 
 			tmpHash = userNum.getHashBinary(); // Сохраняем пароль пользователя
 			for (unsigned int i = 0; i < SHA1HASHLENGTHUINTS; ++i)
 			{
 				tmpHashInt = tmpHash[i];
-				usersFile.write((char*)&tmpHashInt, sizeof(tmpHashInt));
+				usersFile.write((char*)&tmpHashInt, sizeof tmpHashInt);
 			}
 			delete[] tmpHash;
 		}
@@ -101,17 +101,17 @@ bool ChatUsersList::loadFromBinaryFile()
 	if (usersFile.is_open())
 	{
 		std::string tmpStrL, tmpStrN;					// Буфер для сохранения текстовых полей структуры ChatUser
-		unsigned int tmpSize;							// Счётчик считываемых значений
+		size_t tmpSize;									// Счётчик считываемых значений
 		std::unique_ptr<char[]> tmpCharBuf;				// Буфер для чтения текстовых величин
 		unsigned int tmpHashInt = 0;					// Буфер для сохранения хеша структуры CharUser
-		if (!usersFile.read((char*)&tmpSize, sizeof tmpSize))
+		if ( !usersFile.read((char*)&tmpSize, sizeof tmpSize) )
 			return false;
-		unsigned int usersCount = tmpSize;	// Читаем число пользователей
+		size_t usersCount = tmpSize;	// Читаем число пользователей
 
-		for (unsigned int userNum = 0; userNum < usersCount; ++userNum)
+		for (size_t userNum = 0; userNum < usersCount; ++userNum)
 		{
 			
-			if (!usersFile.read((char*)&tmpSize, sizeof(tmpSize)))
+			if ( !usersFile.read((char*)&tmpSize, sizeof tmpSize) )
 				return false;
 			tmpCharBuf.reset(new char[tmpSize + 1]);
 			if (!usersFile.read(tmpCharBuf.get(), tmpSize))
@@ -119,7 +119,7 @@ bool ChatUsersList::loadFromBinaryFile()
 			tmpCharBuf[tmpSize] = '\0';
 			tmpStrL = std::string(tmpCharBuf.get() );			// Читаем логин пользователя
 
-			if (!usersFile.read((char*)&tmpSize, sizeof tmpSize))
+			if (!usersFile.read((char*)&tmpSize, sizeof tmpSize) )
 				return false;
 			tmpCharBuf.reset(new char[tmpSize + 1]);
 			if (!usersFile.read(tmpCharBuf.get(), tmpSize))
@@ -141,7 +141,7 @@ bool ChatUsersList::loadFromBinaryFile()
 
 			ChatUser tmpUser(tmpStrL, tmpStrN, tmpHash);
 			addUser(tmpUser);
-			_forbiddenLogins.insert(tmpUser.getLogin()); // Резервируем логин
+			_forbiddenLogins.emplace(tmpUser.getLogin()); // Резервируем логин
 		}
 		usersFile.close();
 		return true;

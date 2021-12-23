@@ -12,7 +12,7 @@ public:
 	ChatUser(const std::string& login, const std::string& name, Block hash);
 	ChatUser(const std::string& login, const std::string& name, const std::string& password);
 	ChatUser(const std::string& login);
-	~ChatUser();
+	~ChatUser() = default;
 
 	std::string getLogin() const;
 	std::string getName() const;

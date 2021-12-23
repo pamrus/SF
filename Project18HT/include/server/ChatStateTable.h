@@ -38,7 +38,7 @@ class ChatStateTable
 {
 public:
     ChatStateTable();
-    ~ChatStateTable();
+    ~ChatStateTable() = default;
 
     tableStates getCurrentState() const;
     void addState(const TableElement& newState);

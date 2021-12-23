@@ -79,7 +79,7 @@ class ChatEngine
 {
 public:
 	ChatEngine();
-	~ChatEngine();
+	~ChatEngine() = default;
 
 	void mainLoop();					// Основной цикл чата, функционирующий через машину состояний
 
@@ -90,12 +90,12 @@ private:
 	ChatStateTable _stateMachine;		// Машина состояний чата
 
  	// Набор функций, обеспечивающих интерфейс пользователя для каждого из состояний
-	void printHelp();
+	void printHelp() const;
 	void registerUser();
 	void logInUser();
 	void readMessages();
 	void sendMessage();
 	void logOutUser();
-	void listUsers();
-    void printHelpUserOnline();
+	void listUsers() const;
+    void printHelpUserOnline() const;
 };

@@ -27,7 +27,7 @@ std::string ChatMessage::getInfo() const
     return retVal;
 }
 
-std::ostream& operator<<(std::ostream& output, const ChatMessage chatMessage)
+std::ostream& operator<<(std::ostream& output, const ChatMessage& chatMessage)
 {
 	output << chatMessage.getInfo();
 	return output;

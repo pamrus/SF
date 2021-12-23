@@ -6,8 +6,6 @@ ChatEngine::ChatEngine()
 		_stateMachine.addState(defaultTable[i]);
 }
 
-ChatEngine::~ChatEngine() { }
-
 void ChatEngine::mainLoop()
 {
 	char key;
@@ -47,7 +45,7 @@ void ChatEngine::mainLoop()
 	std::cout << "Ждём Вас снова!" << std::endl;
 }
 
-void ChatEngine::printHelp() // H
+void ChatEngine::printHelp() const // H
 {
 	std::cout << "R - Регистрация нового пользователя" << std::endl <<
 		"I - Ввод данных для входа пользователя в систему" << std::endl <<
@@ -75,7 +73,7 @@ void ChatEngine::registerUser() // R
 
 void ChatEngine::logInUser() // I
 {
-	std::string newLogin, newName, newPassword;
+	std::string newLogin, newPassword;
 	std::cout << "==Вход пользователя в чат==" << std::endl << "Введите логин пользователя:";
 	std::cin >> newLogin;
 	std::cout << "Введите пароль пользователя:";
@@ -97,8 +95,8 @@ void ChatEngine::logInUser() // I
 void ChatEngine::readMessages() // M
 {
 	std::cout << "==Чтение новых сообщений==" << std::endl;
-	std::string messageText = "";
-	std::string messageSender = "";
+	std::string messageText;
+	std::string messageSender;
 	ChatMessage currMessage;
 	bool msgExists = false;
 	while (true)
@@ -106,7 +104,7 @@ void ChatEngine::readMessages() // M
 		currMessage = _messagesList.findMessage(_currentUser);
 		messageText = currMessage.getMessage();
 		messageSender = currMessage.getSender();
-		if (messageSender == "")
+		if (messageSender.empty())
 		{
 			if(!msgExists)
 				std::cout << "У Вас нет новых сообщений." << std::endl;
@@ -144,13 +142,13 @@ void ChatEngine::logOutUser() // O
 	_currentUser.clear();
 }
 
-void ChatEngine::listUsers() // L
+void ChatEngine::listUsers() const // L
 {
 	std::cout << "Число зарегистрированных пользователей: " << _usersList.getNumberOfUsers() << "." << std::endl;
 	std::cout << _usersList;
 }
 
-void ChatEngine::printHelpUserOnline() // H
+void ChatEngine::printHelpUserOnline() const // H
 {
 	std::cout << "M - Вывод поступивших сообщений" << std::endl <<
 		"L - Вывод списка зарегистрированных пользователей" << std::endl <<
