@@ -58,20 +58,21 @@ bool ChatUsersList::saveToBinaryFile() const
 		Block tmpHash;				// Буфер для получения хеша структуры CharUser
 		unsigned int tmpHashInt;	// Буфер для сохранения хеша структуры CharUser
 		size_t tmpSize;				// Счётчик записываемых значений
+		char* tmpCharSize = reinterpret_cast<char*>(&tmpSize);
 
 		tmpSize = _usersList.size();
-		usersFile.write(reinterpret_cast<char*>(&tmpSize), sizeof tmpSize); // Сохраняем число пользователей
+		usersFile.write(tmpCharSize, sizeof tmpSize); // Сохраняем число пользователей
 
 		for (auto &userNum : _usersList)
 		{
 			tmpStr = userNum.getLogin(); // Сохраняем логин пользователя
 			tmpSize = tmpStr.length();
-			usersFile.write((char*)&tmpSize, sizeof tmpSize);
+			usersFile.write(tmpCharSize, sizeof tmpSize);
 			usersFile.write(tmpStr.data(), tmpSize);
 
 			tmpStr = userNum.getName(); // Сохраняем имя пользователя
 			tmpSize = tmpStr.length();
-			usersFile.write((char*)&tmpSize, sizeof tmpSize);
+			usersFile.write(tmpCharSize, sizeof tmpSize);
 			usersFile.write(tmpStr.data(), tmpSize);
 
 			tmpHash = userNum.getHashBinary(); // Сохраняем пароль пользователя
@@ -102,16 +103,18 @@ bool ChatUsersList::loadFromBinaryFile()
 	{
 		std::string tmpStrL, tmpStrN;					// Буфер для сохранения текстовых полей структуры ChatUser
 		size_t tmpSize;									// Счётчик считываемых значений
+		char* tmpCharSize = reinterpret_cast<char*>(&tmpSize);
 		std::unique_ptr<char[]> tmpCharBuf;				// Буфер для чтения текстовых величин
 		unsigned int tmpHashInt = 0;					// Буфер для сохранения хеша структуры CharUser
-		if ( !usersFile.read((char*)&tmpSize, sizeof tmpSize) )
+
+		if ( !usersFile.read(tmpCharSize, sizeof tmpSize) )
 			return false;
 		size_t usersCount = tmpSize;	// Читаем число пользователей
 
 		for (size_t userNum = 0; userNum < usersCount; ++userNum)
 		{
 			
-			if ( !usersFile.read((char*)&tmpSize, sizeof tmpSize) )
+			if ( !usersFile.read(tmpCharSize, sizeof tmpSize) )
 				return false;
 			tmpCharBuf.reset(new char[tmpSize + 1]);
 			if (!usersFile.read(tmpCharBuf.get(), tmpSize))
@@ -119,7 +122,7 @@ bool ChatUsersList::loadFromBinaryFile()
 			tmpCharBuf[tmpSize] = '\0';
 			tmpStrL = std::string(tmpCharBuf.get() );			// Читаем логин пользователя
 
-			if (!usersFile.read((char*)&tmpSize, sizeof tmpSize) )
+			if (!usersFile.read(tmpCharSize, sizeof tmpSize) )
 				return false;
 			tmpCharBuf.reset(new char[tmpSize + 1]);
 			if (!usersFile.read(tmpCharBuf.get(), tmpSize))

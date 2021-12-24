@@ -4,6 +4,7 @@
 #include <fstream>
 #include <unordered_set>
 #include <memory>
+#include <string>
 #include "ChatMessage.h"
 
 //NOTE: Основной класс определён в конце файла

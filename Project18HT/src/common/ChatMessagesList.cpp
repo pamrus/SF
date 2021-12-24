@@ -50,26 +50,27 @@ bool ChatMessagesList::saveToBinaryFile() const
 	if (messagesFile.is_open())
 	{
 		std::string tmpStr;			// Буфер для получения текстовых полей структуры ChatMessage
-		size_t tmpSize;		// Счётчик записываемых значений
+		size_t tmpSize;				// Счётчик записываемых значений
+		char* tmpCharSize = reinterpret_cast<char*>(&tmpSize);
 
 		tmpSize = _messagesList.size();
-		messagesFile.write(reinterpret_cast<char*>(&tmpSize), sizeof tmpSize); // Сохраняем число сообщений
+		messagesFile.write(tmpCharSize, sizeof tmpSize); // Сохраняем число сообщений
 
 		for (auto &msgNum : _messagesList)
 		{
 			tmpStr = msgNum.getSender(); // Сохраняем логин отправителя
 			tmpSize = tmpStr.length();
-			messagesFile.write((char*)&tmpSize, sizeof tmpSize);
+			messagesFile.write(tmpCharSize, sizeof tmpSize);
 			messagesFile.write(tmpStr.data(), tmpSize);
 
 			tmpStr = msgNum.getMessage(); // Сохраняем текст сообщения
 			tmpSize = tmpStr.length();
-			messagesFile.write((char*)&tmpSize, sizeof tmpSize);
+			messagesFile.write(tmpCharSize, sizeof tmpSize);
 			messagesFile.write(tmpStr.data(), tmpSize);
 
 			tmpStr = msgNum.getReceiver(); // Сохраняем логин получателя
 			tmpSize = tmpStr.length();
-			messagesFile.write((char*)&tmpSize, sizeof tmpSize);
+			messagesFile.write(tmpCharSize, sizeof tmpSize);
 			messagesFile.write(tmpStr.data(), tmpSize);
 		}
 		messagesFile.close();
@@ -88,16 +89,17 @@ bool ChatMessagesList::loadFromBinaryFile()
 	{
 		std::unique_ptr<char[]> tmpCharBuf;				// Буфер для чтения текстовых величин
 		std::string tmpStrS, tmpStrM, tmpStrR;			// Буфер для сохранения текстовых полей структуры ChatMessage
-		size_t tmpSize;							// Счётчик считываемых значений
+		size_t tmpSize;									// Счётчик считываемых значений
+		char* tmpCharSize = reinterpret_cast<char*>(&tmpSize);
 
-		if (!messagesFile.read((char*)&tmpSize, sizeof tmpSize))
+		if (!messagesFile.read(tmpCharSize, sizeof tmpSize))
 			return false;
 		size_t usersCount = tmpSize;	// Читаем число пользователей
 
 		for (size_t userNum = 0; userNum < usersCount; ++userNum)
 		{
 
-			if (!messagesFile.read((char*)&tmpSize, sizeof tmpSize))
+			if (!messagesFile.read(tmpCharSize, sizeof tmpSize))
 				return false;
 			tmpCharBuf.reset(new char[tmpSize + 1]);
 			if (!messagesFile.read(tmpCharBuf.get(), tmpSize))
@@ -106,7 +108,7 @@ bool ChatMessagesList::loadFromBinaryFile()
 			tmpStrS = std::string(tmpCharBuf.get());			// Читаем логин отправителя
 
 
-			if (!messagesFile.read((char*)&tmpSize, sizeof tmpSize))
+			if (!messagesFile.read(tmpCharSize, sizeof tmpSize))
 				return false;
 			tmpCharBuf.reset(new char[tmpSize + 1]);
 			if (!messagesFile.read(tmpCharBuf.get(), tmpSize))
@@ -114,7 +116,7 @@ bool ChatMessagesList::loadFromBinaryFile()
 			tmpCharBuf[tmpSize] = '\0';
 			tmpStrM = std::string(tmpCharBuf.get());			// Читаем текст сообщения
 
-			if (!messagesFile.read((char*)&tmpSize, sizeof tmpSize))
+			if (!messagesFile.read(tmpCharSize, sizeof tmpSize))
 				return false;
 			tmpCharBuf.reset(new char[tmpSize + 1]);
 			if (!messagesFile.read(tmpCharBuf.get(), tmpSize))

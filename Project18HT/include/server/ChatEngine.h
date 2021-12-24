@@ -90,12 +90,12 @@ private:
 	ChatStateTable _stateMachine;		// Машина состояний чата
 
  	// Набор функций, обеспечивающих интерфейс пользователя для каждого из состояний
-	static void printHelp();
-	void registerUser();
-	void logInUser();
-	void readMessages();
-	void sendMessage();
-	void logOutUser();
+    static void printHelp();
+    void registerUser();
+    void logInUser();
+    void readMessages();
+    void sendMessage();
+    void logOutUser();
     void listUsers();
     static void printHelpUserOnline();
 };
