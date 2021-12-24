@@ -45,7 +45,7 @@ void ChatEngine::mainLoop()
 	std::cout << "Ждём Вас снова!" << std::endl;
 }
 
-void ChatEngine::printHelp() const // H
+void ChatEngine::printHelp() // H
 {
 	std::cout << "R - Регистрация нового пользователя" << std::endl <<
 		"I - Ввод данных для входа пользователя в систему" << std::endl <<
@@ -81,7 +81,7 @@ void ChatEngine::logInUser() // I
 	ChatUser newUser(newLogin, "", newPassword);
 	if (_usersList.login(newUser))
 	{
-		_currentUser = newLogin;
+		_currentUser = move(newLogin);
 		std::cout << "Здравствуйте, \'" << _usersList.getNameByLogin(_currentUser) << "\'!" << std::endl;
 		_stateMachine.changeStateForced(stateUserSuccessfullLogIn);
 	}
@@ -142,13 +142,13 @@ void ChatEngine::logOutUser() // O
 	_currentUser.clear();
 }
 
-void ChatEngine::listUsers() const // L
+void ChatEngine::listUsers() // L
 {
 	std::cout << "Число зарегистрированных пользователей: " << _usersList.getNumberOfUsers() << "." << std::endl;
 	std::cout << _usersList;
 }
 
-void ChatEngine::printHelpUserOnline() const // H
+void ChatEngine::printHelpUserOnline() // H
 {
 	std::cout << "M - Вывод поступивших сообщений" << std::endl <<
 		"L - Вывод списка зарегистрированных пользователей" << std::endl <<
