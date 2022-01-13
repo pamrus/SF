@@ -26,11 +26,17 @@
 
 
 Требуемые для сборки под linux параметры gcc:
+
+
 g++ ./server/main.cpp ./server/ServerToClientConnection.cpp -o server.elf -L /usr/lib/ -lboost_system -lboost_thread -lpthread  -zmuldefs
+
+
 g++ ./client/main.cpp ./client/ClientToServerConnection.cpp -o client.elf -L /usr/lib/ -lboost_system -lboost_thread -lpthread 
 
 
 Библиотека Boost должна быть собрана с параметром "runtime-link=static"!
+
+
 /usr/local/lib должен быть в LD_LIBRARY_PATH!
 
 
