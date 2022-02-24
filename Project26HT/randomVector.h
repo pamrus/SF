@@ -22,7 +22,7 @@ public:
 	randomVector(const randomVector::iterator& start, const randomVector::iterator& stop, const randomVector& parent);
 	randomVector(size_t length, double mean, double deviation);	// Генерируем вектор нормально-распределённых вещественных значений.
 
-	void operator() (const std::string& prefix);
+	void operator() (const std::string& prefix);	// Считаем сумму всех элементов
 
 	double getMean() const;
 	double getDeviation() const;
@@ -31,8 +31,6 @@ public:
 	double getTotalSum() const;
 
 	randomVector cutoffTail(size_t length);	// Отделяем конец вектора в новый вектор
-	double totalSum();	// Считаем сумму всех элементов
-	double makeReport(const std::string& prefix);
 	
 	// Делаем доступными некоторые методы и операторы базового класса:
 	using vector<double>::size;
@@ -41,9 +39,10 @@ public:
 	double operator[] (size_t index) const;	// Запись запрещена
 	using vector<double>::clear;
 
+	double _totalSum;
+
 private:
 	double _mean, _deviation;
-	double _totalSum;
 
 	std::chrono::high_resolution_clock::time_point _generationStart, _additionStart;
 	double _generationDuration, _additionDuration;

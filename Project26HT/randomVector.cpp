@@ -13,7 +13,6 @@ randomVector::randomVector(const randomVector::iterator& start, const randomVect
 
 randomVector::randomVector(size_t length, double mean, double deviation) : std::vector<double>(length), _mean(mean), _deviation(deviation), _totalSum(0.0), _additionDuration(0)
 {
-//	std::cout << "Constructor started!" << std::endl;
 	std::random_device randomize; // Для инициализации вихря Мерсенна
 	std::seed_seq randomSeed{ randomize(), randomize(), randomize(), randomize(), randomize(), randomize(), randomize(), randomize() };
 	std::mt19937 randomIntGenerator(randomSeed);
@@ -21,12 +20,21 @@ randomVector::randomVector(size_t length, double mean, double deviation) : std::
 	_generationStart = timeNow();
 	generate(begin(), end(), bind(randomFloatingGenerator, randomIntGenerator));
 	_generationDuration = timeSpent(_generationStart);
-//	std::cout << "Constructor stopped!" << std::endl;
 }
 
 void randomVector::operator()(const std::string& prefix)
 {
-	makeReport(prefix);
+	std::string msg = prefix;
+	
+	_additionStart = timeNow();
+	_totalSum = std::accumulate(this->begin(), this->end(), 0.0);	// Непосредственно суммирование
+	_additionDuration = timeSpent(_additionStart);
+
+	msg += " Инициализация вектора длиной " + std::to_string(this->size()) + " случайными значениями: " + std::to_string(this->getGenerationDuration()) + " мс\n";
+	msg += prefix + " Длительность суммирования: " + std::to_string(this->getAdditionDuration()) + " мс, значение суммы: " + std::to_string(_totalSum) + "\n";
+#ifdef _DEBUG
+	std::cout << msg;// << std::endl;
+#endif
 }
 
 double randomVector::getMean() const
@@ -69,28 +77,6 @@ auto tmp = randomData.cutoffTail(1);
 std::cout << "Tail: " << tmp.size() << std::endl;
 std::cout << "Remaining: " << randomData.size() << std::endl;
 */
-
-double randomVector::totalSum()
-{
-//	std::cout << "Addition started!" << std::endl;
-	_additionStart = timeNow();
-	_totalSum = std::accumulate(this->begin(), this->end(), 0.0);
-	_additionDuration = timeSpent(_additionStart);
-	//std::cout << "Addition stopped!" << std::to_string(_totalSum) << std::endl;
-	return _totalSum;
-}
-
-double randomVector::makeReport(const std::string& prefix)
-{
-	std::string msg = prefix;
-	msg += " Инициализация вектора длиной " + std::to_string(this->size()) + " случайными значениями: " + std::to_string(this->getGenerationDuration()) + " мс\n";
-	double retVal = this->totalSum();
-	msg += prefix + " Длительность суммирования: " + std::to_string(this->getAdditionDuration()) + " мс, значение суммы: " + std::to_string(retVal) + "\n";
-#ifdef _DEBUG
-	std::cout << msg;// << std::endl;
-#endif
-	return retVal;
-}
 
 double randomVector::at(size_t index) const
 {
