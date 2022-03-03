@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Исходные файлы">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Файлы заголовков">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Файлы ресурсов">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Исходные файлы\mySQL_API">
+      <UniqueIdentifier>{a51cb746-7de1-47e7-bfbc-61872b8e3277}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\mySQL_API">
+      <UniqueIdentifier>{e1ff584e-14fd-4f7c-83ad-b90ba3ad7aad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\util">
+      <UniqueIdentifier>{57ff6217-02a7-4fd7-bd54-4079050b8e0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\util">
+      <UniqueIdentifier>{12a2ad3d-ec80-4321-aa4a-9a1bdc4aaee8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Boost_Asio">
+      <UniqueIdentifier>{13fd828d-fc4d-4aea-8e48-4951f4438678}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Boost_Asio">
+      <UniqueIdentifier>{cfc8f617-392e-41f2-a024-5b1cefcce906}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\mySQL_API\mySQL_API_consts.h">
+      <Filter>Файлы заголовков\mySQL_API</Filter>
+    </ClInclude>
+    <ClInclude Include="include\mySQL_API\mySQL_API_database.h">
+      <Filter>Файлы заголовков\mySQL_API</Filter>
+    </ClInclude>
+    <ClInclude Include="include\mySQL_API\mySQL_API_messagesTable.h">
+      <Filter>Файлы заголовков\mySQL_API</Filter>
+    </ClInclude>
+    <ClInclude Include="include\mySQL_API\mySQL_API_table.h">
+      <Filter>Файлы заголовков\mySQL_API</Filter>
+    </ClInclude>
+    <ClInclude Include="include\mySQL_API\mySQL_API_usersTable.h">
+      <Filter>Файлы заголовков\mySQL_API</Filter>
+    </ClInclude>
+    <ClInclude Include="include\util\Logger.h">
+      <Filter>Файлы заголовков\util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\util\utsname.h">
+      <Filter>Файлы заголовков\util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Boost_Asio\Boost_Asio_server.h">
+      <Filter>Файлы заголовков\Boost_Asio</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\main.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mySQL_API\mySQL_API_database.cpp">
+      <Filter>Исходные файлы\mySQL_API</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mySQL_API\mySQL_API_messagesTable.cpp">
+      <Filter>Исходные файлы\mySQL_API</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mySQL_API\mySQL_API_table.cpp">
+      <Filter>Исходные файлы\mySQL_API</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mySQL_API\mySQL_API_usersTable.cpp">
+      <Filter>Исходные файлы\mySQL_API</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\Logger.cpp">
+      <Filter>Исходные файлы\util</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\utsname.cpp">
+      <Filter>Исходные файлы\util</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Boost_Asio\Boost_Asio_server.cpp">
+      <Filter>Исходные файлы\Boost_Asio</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

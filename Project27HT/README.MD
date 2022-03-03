@@ -38,19 +38,19 @@
 Копирование экземпляров класса запрещено путём наследования от *boost::noncopyable*. Для использования в нескольких потоках можно применять *std::shared_ptr<Logger>*.
 
 ## Пример использования:
->{
->	Logger logger("log.txt");
->	logger << "TestStr1";
->	logger << "TestStr2";
->}
->{
->	Logger logger("log.txt");
->	logger << "TestStr3";
->	logger << "TestStr4";
->	std::cout << logger.getLinesCount() << std::endl;
->	std::cout << logger.readNthLine(0) << std::endl;
->	std::cout << logger.readNthLine(1) << std::endl;
->}
+>{  \
+>	Logger logger("log.txt");  \
+>	logger << "TestStr1";  \
+>	logger << "TestStr2";  \
+>}  \
+>{  \
+>	Logger logger("log.txt");  \
+>	logger << "TestStr3";  \
+>	logger << "TestStr4";  \
+>	std::cout << logger.getLinesCount() << std::endl;  \
+>	std::cout << logger.readNthLine(0) << std::endl;  \
+>	std::cout << logger.readNthLine(1) << std::endl;  \
+>}  \
 
 
 Решение: Александр Павлинов 2022.03.03
